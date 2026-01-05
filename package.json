@@ -1,0 +1,51 @@
+{
+  "name": "@hurenkam/node-red-hue-base",
+  "version": "0.7.0",
+  "description": "Custom node-red nodes for interfacing with clip v2 api",
+  "author": "Mark Hurenkamp",
+  "license": "Apache 2.0",
+  "maintainers": [
+    "Mark Hurenkamp <mark.hurenkamp@xs4all.nl>"
+  ],
+  "keywords": [
+    "node-red",
+    "hue",
+    "clip"
+  ],
+  "files": [
+    "README.md",
+    "LICENSE",
+    "package.json",
+    "src",
+    "examples"
+  ],
+  "node-red": {
+    "version": ">=2.0.0",
+    "nodes": {
+      "main": "src/main.js",
+      "debug": "src/debug.js",
+      "files": "src/files.js",
+      "hue": "src/hue.js"
+    }
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "dependencies": {
+    "@hurenkam/npm-hue-clip-v2": "0.0.1",
+    "axios": "^1.1.3",
+    "debug": "^4.4.3",
+    "eventsource": "^2.0.2",
+    "limiter": "^2.1.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "mocha": "^10.1.0",
+    "node-red": "^2.2.3",
+    "node-red-node-test-helper": "^0.2.7",
+    "nyc": "^15.1.0",
+    "sinon": "^15.0.1"
+  }
+}
