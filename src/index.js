@@ -1,4 +1,3 @@
-/*
 module.exports = {
     BaseNode: require("./BaseNode"),
     BridgeConfigNode: require("./BridgeConfigNode"),
@@ -9,4 +8,3 @@ module.exports = {
     //BridgeConfigUI: require("./BridgeConfigUI"),
     //ServiceUI: require("./ServiceUI"),
 }
-*/
