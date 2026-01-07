@@ -23,42 +23,8 @@ Editor/UI functionality is currently not being tested apart from my own use in t
  - [@hurenkam/node-red-hue-services](https://github.com/hurenkam/node-red-hue-services): This is mostly an eye-candy package, and contains specialized nodes for many known service types, with separate colors and type specific status feedback (depends on [@hurenkam/node-red-hue-base](https://github.com/hurenkam/node-red-hue-base)).
  - [@hurenkam/node-red-hue-behavior](https://github.com/hurenkam/node-red-hue-behavior): This is a new package with nodes that can do more complex automation using messages from/to services as defined in node-red-hue-services. Note that it does not depend on this package specifically, as the dependency is on the message level only (thus could be triggered/used by logic outside this package as well). It does depend on [@hurenkam/npm-utils](https://github.com/hurenkam/npm-utils).
 
-    ##### Warning! The 0.7.0 release breaks existing 0.6.x and 0.5.x flows because the type names have been modified to use the @hurenkam/node-red-hue-services/ prefix.
-
-
-## Devices / Behaviors:
-- Removed for now, services should cover all the basics, devices & behaviors will be re-introduced in a later release as separate packages.
-
-## Services:
-- Button
-- Camera Motion
-- Contact
-- Device Power
-- Grouped Light
-- Light
-- Light Level
-- Motion
-- Relative Rotary
-- Scene
-- Temperature
-- Zigbee Connectivity
-
 ## Todo
-- ~~Bridge discovery and automatic key generation has not yet been implemented. Currently the~~
-  ~~bridge needs to be configured manually with an ip address and known key.~~
-- ~~Provide better low level support for simple resources as 'grouped_light' or 'light'.~~
-- ~~Provide a generic sevice node (to allow using as of yet unsupported services)~~
-- ~~Use scope, this is probably required if i want to upload this as a package.~~
-- ~~Fix packaging, now I'm using a symlink to point to my *UI.js files, this needs a proper solution.~~
-- ~~Upload package to node-red library~~
-- ~~Unit Tests for Clip~~
-- ~~Unit Tests for Nodes~~
-- ~~Contact sensor~~
-- ~~Camera~~
-- Geofencing
-- ~~Smart Scenes~~
 - Unit Tests for UI
-
 
 # Use
 Using these nodes requires a bit of knowledge on the clip v2 api, as i designed this palette to offer an easy low level interface towards clip.
@@ -77,27 +43,6 @@ And the following command wil set the brightness to 50%:
 Do note that to address a node, you must either provide an msg.rids array that contains the rid of the resource you wish to address, or an msg.rtypes array that contains the rtype of the resource you wish to address.
 
 # Design
-
-## Incoming Event
-```mermaid
-sequenceDiagram
-    actor Bridge
-    Bridge ->> ClipApi: message
-    ClipApi ->> Resource: onEvent
-    Resource ->> ResourceNode: update(event)
-    ResourceNode ->> Output: msg.payload = event
-```
-
-## Outgoing Message
-```mermaid
-sequenceDiagram
-    actor Bridge
-    Input ->> ResourceNode: msg.payload, msg.rtypes | msg.rids
-    ResourceNode ->> Resource: put msg.payload
-    Resource ->> ClipApi: put rid, data
-    ClipApi ->> RestApi: put /clip/v2/rid data
-    RestApi ->> Bridge: put
-```
 
 ## Class Diagram
 ```mermaid
@@ -155,142 +100,11 @@ namespace node_red_hue_base {
 }
 namespace npm_hue_clip_v2 {
     class ClipApi {
-        #restApi
-        #resources
-        #startQ
-        #isStarted
-        #name
-        #ip
-        #key
-        
-        +constructor()
-        +requestStartup(resource)
-        +getResource(rid)
-        +get(rtype,rid)
-        +put(rtype,rid,data)
-        +post(rtype,rid,data)
-        +delete(rtype,rid)
-        #isResourceRegistered(rid)
-        #registerResource(resource)
-        #unregisterResource(resource)
-        +getSortedServicesById(rid)
-        +getSortedResourcesByTypeAndModel(type,models)
-        +getSortedResourceOptions(type,models)
-        +getSortedTypeOptions()
-        +getSortedOwnerOptions()
-        +getSortedServiceOptions()
-        +destructor()
-    }
-
-    class RestApi {
-        #ip
-        #headers
-        #requestQ
-        #timeout
-        #limiter
-        
-        +constructor(name,ip,throttle,headers)
-        #request(url,method,data)
-        #handleRequest()
-        +get(url)
-        +put(url,data)
-        +post(url,data)
-        +delete(url)
-        +destructor()
     }
 
     class Resource {
-        #clip
-        #item
-        
-        +constructor(item,clip)
-        +clip()
-        +item()
-        +id()
-        +rid()
-        +rtype()
-        +owner()
-        +name()
-        +typeName()
-        +services()
-        +get()
-        +put(data)
-        +onEvent(event)
-        +updateStatus(event)
-        +destructor()
     }
 }
-namespace node_red_hue_services {
-    class ButtonNode {
-        +constructor(config)
-        +onUpdate(event)
-        +updateStatus()
-    }
-
-    class DevicePowerNode {
-        +constructor(config)
-        +onUpdate(event)
-        +updateStatus()
-    }
-
-    class GroupedLightNode {
-        +constructor(config)
-        +onUpdate(event)
-        +updateStatus()
-    }
-
-    class LightLevelNode {
-        +constructor(config)
-        +onUpdate(event)
-        +updateStatus()
-    }
-
-    class LightNode {
-        +constructor(config)
-        +onUpdate(event)
-        +updateStatus()
-    }
-
-    class MotionNode {
-        +constructor(config)
-        +onUpdate(event)
-        +updateStatus()
-    }
-
-    class RelativeRotaryNode {
-        +constructor(config)
-        +onUpdate(event)
-        +updateStatus()
-    }
-
-    class SceneNode {
-        +constructor(config)
-    }
-
-    class TemperatureNode {
-        +constructor(config)
-        +onUpdate(event)
-        +updateStatus()
-    }
-
-    class ZigbeeConnectivityNode {
-        +constructor(config)
-        +onUpdate(event)
-        +updateStatus()
-    }
-}
-
-direction TB
-ResourceNode <|-- ButtonNode
-ResourceNode <|-- DevicePowerNode
-ResourceNode <|-- GroupedLightNode
-ResourceNode <|-- LightLevelNode
-ResourceNode <|-- LightNode
-ResourceNode <|-- MotionNode
-ResourceNode <|-- RelativeRotaryNode
-ResourceNode <|-- SceneNode
-ResourceNode <|-- TemperatureNode
-ResourceNode <|-- ZigbeeConnectivityNode
 
 direction LR
 BaseNode <|-- BridgeConfigNode
@@ -301,8 +115,6 @@ ServiceNode --|> ResourceNode
 
 direction LR
 BridgeConfigNode --> ClipApi
-ClipApi --> RestApi
-ClipApi *-- Resource
 
 ```
 
