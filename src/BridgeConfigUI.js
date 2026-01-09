@@ -1,4 +1,4 @@
-import { BaseUI } from "/src/BaseUI.js"
+import { BaseUI } from "/resources/@hurenkam/node-red-hue-base/BaseUI.js";
 
 export class BridgeConfigUI extends BaseUI {
     constructor() {
