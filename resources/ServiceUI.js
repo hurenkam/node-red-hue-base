@@ -194,7 +194,7 @@ When this flag is enabled the node will send an event at startup with its initia
     }
 
     showServiceSelectionIfThereIsChoice() {
-        console.log("TemperatureUI[].showServiceSelectionIfThereIsChoice()");
+        console.log("ServiceUI.showServiceSelectionIfThereIsChoice()");
 
         var bridge = $('#node-input-bridge').val();
         var owner = $('#node-input-owner').val();
@@ -252,7 +252,7 @@ When this flag is enabled the node will send an event at startup with its initia
         });
 
         $('#node-input-owner').change(function() {
-            console.log("TemperatureUI[].onEditPrepare().on('change')");
+            console.log("ServiceUI.onEditPrepare().on('change')");
             instance.showServiceSelectionIfThereIsChoice();
             instance.selectText("uuid");
             instance.selectService();
