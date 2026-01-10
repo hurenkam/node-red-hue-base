@@ -79,7 +79,6 @@ module.exports = function (RED) {
         res.end(JSON.stringify(Object(options)));
     });
     
-    
     RED.httpAdmin.get('/BridgeConfigNode/GetSortedOwnerOptions', async function (req, res, next) {
         _info("/GetSortedOwnerOptions");
         _trace(req.query);
