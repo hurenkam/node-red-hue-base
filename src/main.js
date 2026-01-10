@@ -8,10 +8,12 @@ module.exports = function(RED) {
 
     const BridgeConfigNode = require('./BridgeConfigNode');
     const ServiceNode = require('./ServiceNode');
+    const DeviceNode = require('./DeviceNode');
 
     var nodes = {
         "BridgeConfigNode": BridgeConfigNode,
-        "ServiceNode": ServiceNode
+        "ServiceNode": ServiceNode,
+        "DeviceNode": DeviceNode
     }
 
     info("function(RED): nodes",nodes);
