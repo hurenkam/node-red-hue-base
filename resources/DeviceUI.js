@@ -7,9 +7,7 @@ export class DeviceUI extends BaseUI {
 
         this.config.defaults.name =       { value:"" };
         this.config.defaults.bridge =     { type: "@hurenkam/node-red-hue-base/BridgeConfigNode", required: true };
-        //this.config.defaults.rtype =      { value:rtype, required: true };
-        //this.config.defaults.owner =      { value:"", required: true };
-        this.config.defaults.uuid =       { value:"", required: true };
+        this.config.defaults.device =     { value:"", required: true };
         this.config.defaults.startevent = { value: false };
 
         this.config.inputs = 1;
@@ -22,7 +20,7 @@ export class DeviceUI extends BaseUI {
         help["Settings"] += "\
 #### Bridge\n\
 Select the hue bridge for your device or resource.\n\n\
-#### UUID\n\
+#### Device\n\
 This field offers you a choice of either filling in the UUID of the device \
 to be selected, or you can select one from the list which is offered. \
 \n\n\
@@ -99,114 +97,7 @@ TemperatureUI
             RED.notify("unknown error", "error");
         });
     }
-/*
-    selectType() {
-        console.log("DeviceUI.selectType()");
-        var bridge_id = $('#node-input-bridge').val();
-        var bridge = (bridge_id)? RED.nodes.node(bridge_id): null;
 
-        if ((!bridge_id) || (!bridge)) {
-            console.log("ResourceUI.selectResource(): invalid bridge:", bridge_id);
-            return;
-        }
-
-        this.selectOption(
-            "rtype",
-            "BridgeConfigNode/GetSortedTypeOptions",
-            {
-                bridge_id: bridge.id,
-            }
-        );
-    }
-
-    selectOwner() {
-        console.log("DeviceUI.selectOwner()");
-        var bridge_id = $('#node-input-bridge').val();
-        var bridge = (bridge_id)? RED.nodes.node(bridge_id): null;
-
-        if ((!bridge_id) || (!bridge)) {
-            console.log("DeviceUI.selectOwner(): invalid bridge:", bridge_id);
-            return;
-        }
-
-        var rtype = $('#node-input-rtype').val();
-        if (!rtype) {
-            console.log("DeviceUI.selectOwner(): invalid rtype:", rtype);
-            return;
-        }
-
-        console.log("DeviceUI.selectOwner()",bridge.id,rtype);
-        this.selectOption(
-            "owner",
-            "BridgeConfigNode/GetSortedOwnerOptions",
-            {
-                bridge_id: bridge.id,
-                rtype: rtype
-            }
-        );
-    }
-
-    selectService() {
-        console.log("DeviceUI.selectService()");
-
-        console.log("DeviceUI.selectService()");
-        var bridge_id = $('#node-input-bridge').val();
-        var bridge = (bridge_id)? RED.nodes.node(bridge_id): null;
-
-        if ((!bridge_id) || (!bridge)) {
-            console.log("DeviceUI.selectService(): invalid bridge:", bridge_id);
-            return;
-        }
-
-        var rtype = $('#node-input-rtype').val();
-        if (!rtype) {
-            console.log("DeviceUI.selectService(): invalid rtype:", rtype);
-            return;
-        }
-
-        var owner = $('#node-input-owner').val();
-        if (!owner) {
-            console.log("DeviceUI.selectService(): invalid owner:", owner);
-            return;
-        }
-
-        this.selectOption(
-            "uuid",
-            "BridgeConfigNode/GetSortedServiceOptions",
-            {
-                bridge_id: bridge.id,
-                rtype: rtype,
-                owner: owner
-            }
-        );
-    }
-
-    showServiceSelectionIfThereIsChoice() {
-        console.log("DeviceUI.showServiceSelectionIfThereIsChoice()");
-
-        var bridge = $('#node-input-bridge').val();
-        var owner = $('#node-input-owner').val();
-        var rtype = $('#node-input-rtype').val();
-        
-        if ((!bridge) || (!owner) || (owner=="") || (!rtype) || (rtype=="")) return;
-
-        $.get("BridgeConfigNode/GetSortedServiceOptions", {
-            bridge_id: bridge,
-            rtype: rtype,
-            owner: owner
-        })
-        .done(function(data) {
-            var options = JSON.parse(data);
-            console.log("Options:",options);
-            if (options.length == 1) {
-                $('#node-input-uuid').val(options[0].value);
-                $('#node-container-uuid').hide();
-            } else if (options.length > 1) {
-                $('#node-container-uuid').show();
-            }
-        })
-    };
-*/
     selectDevice() {
         console.log("DeviceUI.selectDevice()");
         var bridge_id = $('#node-input-bridge').val();
@@ -216,12 +107,6 @@ TemperatureUI
             console.log("DeviceUI.selectOwner(): invalid bridge:", bridge_id);
             return;
         }
-
-        //var rtype = $('#node-input-rtype').val();
-        //if (!rtype) {
-        //    console.log("DeviceUI.selectOwner(): invalid rtype:", rtype);
-        //    return;
-        //}
 
         console.log("DeviceUI.selectDevice()",bridge.id);
         this.selectOption(
@@ -238,15 +123,6 @@ TemperatureUI
         console.log("DeviceUI.onEditPrepare()",config);
         var instance = this;
 
-        //$('#input-select-rtype-search').click(function()
-        //{
-        //    if($('#input-select-rtype').find(".red-ui-typedInput-container").length > 0) {
-        //        instance.selectText("rtype");
-        //    } else {
-        //        instance.selectType();
-        //    }
-        //});
-
         $('#input-select-device-search').click(function()
         {
             if($('#input-select-device').find(".red-ui-typedInput-container").length > 0) {
@@ -256,24 +132,10 @@ TemperatureUI
             }
         });
 
-        //$('#input-select-uuid-search').click(function()
-        //{
-        //    if($('#input-select-uuid').find(".red-ui-typedInput-container").length > 0) {
-        //        instance.selectText("uuid");
-        //    } else {
-        //        instance.selectService();
-        //    }
-        //});
-
         $('#node-input-device').change(function() {
             console.log("DeviceUI.onEditPrepare().on('change')");
-            //instance.showServiceSelectionIfThereIsChoice();
             instance.selectText("device");
             instance.selectDevice();
         });
-
-        //$('#node-container-uuid').hide();
-
-        //this.showServiceSelectionIfThereIsChoice();
     }
 }
