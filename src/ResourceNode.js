@@ -1,10 +1,5 @@
 BaseNode = require("./BaseNode");
 
-//const _error = require('debug')('error').extend('ResourceNode');
-//const _warn  = require('debug')('warn').extend('ResourceNode');
-//const _info  = require('debug')('info').extend('ResourceNode');
-//const _trace = require('debug')('trace').extend('ResourceNode');
-
 class ResourceNode extends BaseNode {
     #onUpdate;
     #resource;
@@ -17,11 +12,6 @@ class ResourceNode extends BaseNode {
 
         this.#info = require('debug')('info').extend('node-red-hue-base').extend('ResourceNode').extend(config.id);
         this.#trace = require('debug')('trace').extend('node-red-hue-base').extend('ResourceNode').extend(config.id);
-
-        //this.#error = _error.extend("["+this.logid()+"]");
-        //this.#warn  = _warn. extend("["+this.logid()+"]");
-        //this.#info  = _info. extend("["+this.logid()+"]");
-        //this.#trace = _trace.extend("["+this.logid()+"]");
 
         this.#info("constructor()");
         if (this.bridge()) {

@@ -67,8 +67,19 @@ class BridgeConfigNode extends BaseNode {
     }
 
     requestStartup(resource) {
+        this.#info("requestStartup(",resource,")");
+        var instance = this;
+        if (instance.clip()) {
+            instance.clip().requestResourceStartup((id) => {
+                resource.start(instance.clip().getResource(id));
+            },resource.rid());
+        }
+    }
+
+    requestResourceStartup(start,id) {
+        this.#info("requestResourceStartup(",start,id,")");
         if (this.clip()) {
-            this.clip().requestStartup(resource);
+            this.clip().requestResourceStartup(start,id);
         }
     }
 

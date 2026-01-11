@@ -2,57 +2,63 @@ BaseNode = require("./BaseNode");
 
 class DeviceNode extends BaseNode {
     #onUpdate;
-    #device;
+    #resource;
 
     #info;
     #trace;
 
     constructor(config) {
         super(config);
+        var instance = this;
 
         this.#info = require('debug')('info').extend('node-red-hue-base').extend('DeviceNode').extend(config.id);
         this.#trace = require('debug')('trace').extend('node-red-hue-base').extend('DeviceNode').extend(config.id);
 
         this.#info("constructor()");
         if (this.bridge()) {
-            this.bridge().requestDeviceStartup(this);
+            this.bridge().requestStartup(this);
         }
     }
 
-    start(device) {
+    start(resource) {
+        this.#info("start():", resource, resource.data());
         if (resource==null)
             return;
 
-        this.#info("start()");
-        this.#device = device;
-/*
+        this.#resource = resource;
+
         var instance = this;
         this.#onUpdate = function(event) {
             instance.onUpdate(event);
         }
 
         if (this.startevent()==true) {
-            //instance.onStartup(resource.data())
+            instance.onStartup(resource.data())
         }
 
         this.resource().on('update',this.#onUpdate);
-*/        
+
+
+        this.resource().data().services.forEach((item) => {
+            this.#info("start() found resource:",item);
+        });
+        
         this.updateStatus();
     }
 
     destructor() {
         this.#info("destructor()");
         this.removeAllListeners();
-        this.#device = null;
+        this.#resource = null;
         super.destructor();
     }
 
-    device() {
-        return this.#device;
+    resource() {
+        return this.#resource;
     }
 
     rid() {
-        return this.config.uuid;
+        return this.config.device;
     }
 
     startevent() {
@@ -107,4 +113,4 @@ class DeviceNode extends BaseNode {
     }
 }
 
-module.exports = ResourceNode;
+module.exports = DeviceNode;
