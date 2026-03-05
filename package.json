@@ -1,6 +1,6 @@
 {
   "name": "@hurenkam/node-red-hue-base",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Custom node-red nodes for interfacing with clip v2 api",
   "main": "src/index.js",
   "author": "Mark Hurenkamp",
