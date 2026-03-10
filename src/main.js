@@ -1,14 +1,13 @@
+const BaseNode = require('./BaseNode');
+const BridgeConfigNode = require('./BridgeConfigNode');
+const ServiceNode = require('./ServiceNode');
+const DeviceNode = require('./DeviceNode');
+
 module.exports = function(RED) {
     "use strict";
-    var info = require('debug')('info').extend('node-red-hue-base').extend('index.js');
+    var info = require('debug')('info').extend('node-red-hue-base').extend('main.js');
     info("function(RED)");
-
-    const BaseNode = require('./BaseNode');
     BaseNode.nodeAPI = RED;
-
-    const BridgeConfigNode = require('./BridgeConfigNode');
-    const ServiceNode = require('./ServiceNode');
-    const DeviceNode = require('./DeviceNode');
 
     var nodes = {
         "BridgeConfigNode": BridgeConfigNode,

@@ -58,8 +58,10 @@ class BridgeConfigNode extends BaseNode {
     }
 
     _destructClip() {
-        this.#clip.destructor();
-        this.#clip = null;
+        if (this.#clip) {
+            this.#clip.destructor();
+            this.#clip = null;
+        }
     }
 
     clip() {

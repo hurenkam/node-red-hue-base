@@ -1,4 +1,4 @@
-BaseNode = require("./BaseNode");
+const BaseNode = require("./BaseNode");
 
 class ResourceNode extends BaseNode {
     #onUpdate;
