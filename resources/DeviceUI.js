@@ -9,6 +9,7 @@ export class DeviceUI extends BaseUI {
         this.config.defaults.bridge =     { type: "@hurenkam/node-red-hue-base/BridgeConfigNode", required: true };
         this.config.defaults.device =     { value:"", required: true };
         this.config.defaults.startevent = { value: false };
+        this.config.defaults.outputs =    { value: 1 };
 
         this.config.inputs = 1;
         this.config.color = "#EEEEEE";
@@ -39,7 +40,7 @@ When this flag is enabled the node will send an event at startup with its initia
         text += this.uiCheckboxInput("startevent","Send current state event at startup");
         return text;
     }
-TemperatureUI
+
     selectText(id) {
         console.log("DeviceUI.selectText()");
 
@@ -136,6 +137,37 @@ TemperatureUI
             console.log("DeviceUI.onEditPrepare().on('change')");
             instance.selectText("device");
             instance.selectDevice();
+        });
+    }
+
+    onEditSave(config) {
+        super.onEditSave(config);
+        console.log("DeviceUI.onEditSave(",config,")");
+
+        var bridge_id = $('#node-input-bridge').val();
+        var device_id = $('#node-input-device').val();
+        var bridge = (bridge_id)? RED.nodes.node(bridge_id): null;
+
+        if ((!bridge_id) || (!bridge)) {
+            console.log("DeviceUI.onEditSave(): invalid bridge:", bridge_id);
+            return;
+        }
+
+        $.get('BridgeConfigNode/GetDeviceServices', { bridge_id: bridge.id, device_id: device_id } )
+        .done( function(data) {
+            console.log("DeviceUI.onEditSave(): services:", data);
+            var services = JSON.parse(data);
+            config.outputs = services.length;
+
+            var results = [];
+            Object.values(services).forEach((service) => {
+                results.push(service.label);
+            });
+            config.outputLabels=results;
+        })
+        .fail(function()
+        {
+            console.log("DeviceUI.onEditSave(): failed to retrieve services");
         });
     }
 }

@@ -95,6 +95,14 @@ module.exports = function (RED) {
         res.end(JSON.stringify(Object(options)));
     });
 
+    RED.httpAdmin.get('/BridgeConfigNode/GetDeviceServices', async function (req, res, next) {
+        _info("/GetDeviceServices");
+        _trace(req.query);
+        var clip = BridgeConfigNode.bridges()[req.query.bridge_id].instance.clip();
+        var result = clip.getDeviceServices(req.query.device_id);
+        res.end(JSON.stringify(Object(result)));
+    });
+
     RED.httpAdmin.get('/BridgeConfigNode/GetSortedServiceOptions', async function (req, res, next) {
         _info("/GetSortedServiceOptions");
         _trace(req.query);
