@@ -10,6 +10,7 @@ export class DeviceUI extends BaseUI {
         this.config.defaults.device =     { value:"", required: true };
         this.config.defaults.startevent = { value: false };
         this.config.defaults.debug =      { value: false };
+        this.config.defaults.split =      { value: false };
 
         this.config.color = "#CCCCCC";
         this.config.icon = "font-awesome/fa-gears";
@@ -37,6 +38,7 @@ When this flag is enabled the node will send an event at startup with its initia
         text += this.uiTextInput("bridge","Bridge");
         text += this.uiSelectInput("device","Device");
         text += this.uiCheckboxInput("startevent","Send current state event at startup");
+        text += this.uiCheckboxInput("split","Separate output for each service");
         text += this.uiCheckboxInput("debug","Enable debug button");
         return text;
     }
@@ -134,44 +136,59 @@ When this flag is enabled the node will send an event at startup with its initia
         });
 
         $('#node-input-device').change(function() {
-            console.log("DeviceUI.onEditPrepare().on('change')");
+            console.log("DeviceUI.onEditPrepare().on('change') device");
             instance.selectText("device");
             instance.selectDevice();
         });
-    }
 
-/*
-    onEditSave(config) {
-        super.onEditSave(config);
-        console.log("DeviceUI.onEditSave(",config,")");
-
-        var bridge_id = $('#node-input-bridge').val();
-        var device_id = $('#node-input-device').val();
-        var bridge = (bridge_id)? RED.nodes.node(bridge_id): null;
-
-        if ((!bridge_id) || (!bridge)) {
-            console.log("DeviceUI.onEditSave(): invalid bridge:", bridge_id);
-            return;
-        }
-
-        $.get('BridgeConfigNode/GetDeviceServices', { bridge_id: bridge.id, device_id: device_id } )
-        .done( function(data) {
-            console.log("DeviceUI.onEditSave(): services:", data);
-            var services = JSON.parse(data);
-            config.outputs = services.length;
-
-            var results = [];
-            Object.values(services).forEach((service) => {
-                results.push(service.label);
-            });
-            config.outputLabels=results;
-        })
-        .fail(function()
-        {
-            console.log("DeviceUI.onEditSave(): failed to retrieve services");
+        $('#node-input-split').change(function() {
+            console.log("DeviceUI.onEditPrepare().on('change') split");
+            instance.updateOutputs(config);
         });
     }
-*/
+
+    onEditSave(config) {
+        console.log("DeviceUI.onEditSave(",config,")");
+        this.updateOutputs(config);
+        super.onEditSave(config);
+    }
+
+    updateOutputs(config) {
+        console.log("DeviceUI.updateOutputs(",config,")");
+
+        if (config.split) {
+            console.log("DeviceUI.updateOutputs(): split outputs!");
+            var bridge_id = $('#node-input-bridge').val();
+            var device_id = $('#node-input-device').val();
+            var bridge = (bridge_id)? RED.nodes.node(bridge_id): null;
+
+            if ((!bridge_id) || (!bridge)) {
+                console.log("DeviceUI.updateOutputs(): invalid bridge:", bridge_id);
+                return;
+            }
+
+            $.get('BridgeConfigNode/GetDeviceServices', { bridge_id: bridge.id, device_id: device_id } )
+            .done( function(data) {
+                console.log("DeviceUI.updateOutputs(): services:", data);
+                var services = JSON.parse(data);
+                config.outputs = services.length + 1;
+
+                var results = ["device"];
+                Object.values(services).forEach((service) => {
+                    results.push(service.label);
+                });
+                config.outputLabels=results;
+            })
+            .fail(function()
+            {
+                console.log("DeviceUI.updateOutputs(): failed to retrieve services");
+            });
+        } else {
+            config.outputLabels=[""]
+            config.outputs=1;
+        }
+    }
+
     isButtonVisible(config) {
         console.log("DeviceUI.isButtonVisible()",config);
         return config.debug || false;

@@ -37,23 +37,27 @@ class DeviceNode extends BaseNode {
         this.#services=[];
         this.#resource = resource;
         this.resource().data().services.forEach((service) => {
-            this.#info("start() found resource:",service);
             var resource = this.bridge().clip().getResource(service.rid);
-            this.#services.push(resource);
+            if (resource) {
+                this.#info("start() found resource for service:",service.rid);
+                this.#services.push(resource);
+            } else {
+                this.#warn("start() unable to find resource for service: ",service.rid);
+            }
         });
 
         var instance = this;
-        this.#onUpdate = function(event) {
-            instance.onUpdate(event);
-        }
-
         if (this.startevent()==true) {
-            instance.onStartup(resource.data());
+            instance.onStartup();
         }
 
-        this.resource().on('update',this.#onUpdate);
-        this.#services.forEach((service) => {
-            service.on('update',this.#onUpdate);
+        this.resource().on('update',function(event) {
+            instance.onUpdate(0,event);
+        });
+        this.#services.forEach((service,index) => {
+            service.on('update',function(event) {
+                instance.onUpdate(index+1,event);
+            });
         });
         
         this.updateStatus();
@@ -82,13 +86,27 @@ class DeviceNode extends BaseNode {
         return BaseNode.nodeAPI.nodes.getNode(this.config.bridge);
     }
 
+    send_msg(output,msg) {
+        this.#trace("send_msg()",output,msg);
+        if (this.config.outputs>1) {
+            var msgs = [];
+            for (let i=0; i<output;i++) {
+                msgs.push(null);
+            }
+            msgs.push(msg);
+            this.send(msgs);
+        } else {
+            this.send(msg);
+        }
+    }
+
     onStartup() {
         var instance = this;
 
         instance.#trace("onStartup()");
-        instance.send({ payload: instance.#resource.data() });
-        instance.#services.forEach((service) => {
-            instance.send({ payload: service.data() });
+        instance.send_msg(0,{ payload: instance.#resource.data() });
+        instance.#services.forEach((service,index) => {
+            instance.send_msg(index+1,{ payload: service.data() });
         });
     }
 
@@ -96,20 +114,20 @@ class DeviceNode extends BaseNode {
         var instance = this;
 
         instance.#trace("onButtonClicked()");
-        instance.send({ payload: instance.#resource.data() });
-        instance.#services.forEach((service) => {
+        instance.send_msg(0,{ payload: instance.#resource.data() });
+        instance.#services.forEach((service,index) => {
             if (service) {
                 instance.#trace("onButtonClicked() service: ",service);
-                instance.send({ payload: service.data() });
+                instance.send_msg(index+1,{ payload: service.data() });
             } else {
                 instance.#warn("onButtonClicked() service not defined");
             }
         });
     }
 
-    onUpdate(event) {
-        this.#trace("onUpdate()");
-        this.send({ payload: event });
+    onUpdate(output,event) {
+        this.#trace("onUpdate()",output,event);
+        this.send_msg(output,{ payload: event });
     }
 
     onInput(msg) {
