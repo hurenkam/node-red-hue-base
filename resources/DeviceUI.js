@@ -9,10 +9,9 @@ export class DeviceUI extends BaseUI {
         this.config.defaults.bridge =     { type: "@hurenkam/node-red-hue-base/BridgeConfigNode", required: true };
         this.config.defaults.device =     { value:"", required: true };
         this.config.defaults.startevent = { value: false };
-        this.config.defaults.outputs =    { value: 1 };
+        this.config.defaults.debug =      { value: false };
 
-        this.config.inputs = 1;
-        this.config.color = "#EEEEEE";
+        this.config.color = "#CCCCCC";
         this.config.icon = "font-awesome/fa-gears";
     }
 
@@ -38,6 +37,7 @@ When this flag is enabled the node will send an event at startup with its initia
         text += this.uiTextInput("bridge","Bridge");
         text += this.uiSelectInput("device","Device");
         text += this.uiCheckboxInput("startevent","Send current state event at startup");
+        text += this.uiCheckboxInput("debug","Enable debug button");
         return text;
     }
 
@@ -140,6 +140,7 @@ When this flag is enabled the node will send an event at startup with its initia
         });
     }
 
+/*
     onEditSave(config) {
         super.onEditSave(config);
         console.log("DeviceUI.onEditSave(",config,")");
@@ -168,6 +169,24 @@ When this flag is enabled the node will send an event at startup with its initia
         .fail(function()
         {
             console.log("DeviceUI.onEditSave(): failed to retrieve services");
+        });
+    }
+*/
+    isButtonVisible(config) {
+        console.log("DeviceUI.isButtonVisible()",config);
+        return config.debug || false;
+    }
+
+    onButtonClicked(config) {
+        console.log("DeviceUI.onButtonClicked(",config,")");
+
+        $.get('DeviceNode/ButtonClicked', { device_id: config.id } )
+        .done( function(data) {
+            console.log("DeviceUI.onButtonClicked() result:", data);
+        })
+        .fail(function()
+        {
+            console.log("DeviceUI.onButtonClicked() failed to execute");
         });
     }
 }

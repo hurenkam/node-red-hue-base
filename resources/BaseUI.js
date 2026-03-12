@@ -20,6 +20,14 @@ export class BaseUI {
             oneditprepare: function() { instance.onEditPrepare(this) },
             oneditsave:    function() { instance.onEditSave(this) },
             oneditcancel:  function() { instance.onEditCancel(this) },
+            button: {
+                visible: function() {
+                    return instance.isButtonVisible(this);
+                },
+                onclick: function() {
+                    instance.onButtonClicked(this);
+                }
+            }
         }
     }
 
@@ -127,5 +135,14 @@ export class BaseUI {
 
     onEditCancel(config) {
         console.log("BaseUI.onEditCancel()");
+    }
+
+    onButtonClicked(config) {
+        console.log("BaseUI.onButtonClicked()",config);
+    }
+
+    isButtonVisible(config) {
+        console.log("BaseUI.isButtonVisible()",config);
+        return false;
     }
 }

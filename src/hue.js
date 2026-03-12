@@ -9,9 +9,10 @@ const _trace = require('debug')('trace').extend('node-red-hue-base').extend('hue
 
 module.exports = function (RED) {
     const BridgeConfigNode = require('./BridgeConfigNode');
+    const DeviceNode = require('./DeviceNode');
 
     RED.httpAdmin.get('/BridgeConfigNode/DiscoverBridges', async function (req, res, next) {
-        _info("/DiscoverBridges");
+        _info("/BridgeConfigNode/DiscoverBridges");
         _trace(req.query);
         var options = [];
     
@@ -31,7 +32,7 @@ module.exports = function (RED) {
     });
     
     RED.httpAdmin.get('/BridgeConfigNode/AcquireApplicationKey', async function (req, res, next) {
-        _info("/AcquireApplicationKey");
+        _info("/BridgeConfigNode/AcquireApplicationKey");
         _trace(req.query);
     
         if (!req.query.ip) {
@@ -51,7 +52,7 @@ module.exports = function (RED) {
     });
     
     RED.httpAdmin.get('/BridgeConfigNode/GetBridgeOptions', async function (req, res, next) {
-        _info("/GetBridgeOptions");
+        _info("/BridgeConfigNode/GetBridgeOptions");
         _trace(req.query);
         var options = [];
     
@@ -63,7 +64,7 @@ module.exports = function (RED) {
     });
     
     RED.httpAdmin.get('/BridgeConfigNode/GetSortedResourceOptions', async function (req, res, next) {
-        _info("/GetSortedResourceOptions");
+        _info("/BridgeConfigNode/GetSortedResourceOptions");
         _trace(req.query);
         var clip = BridgeConfigNode.bridges()[req.query.bridge_id].instance.clip();
         var options = clip.getSortedResourceOptions(req.query.type, req.query.models);
@@ -71,7 +72,7 @@ module.exports = function (RED) {
     });
     
     RED.httpAdmin.get('/BridgeConfigNode/GetSortedTypeOptions', async function (req, res, next) {
-        _info("/GetSortedTypeOptions");
+        _info("/BridgeConfigNode/GetSortedTypeOptions");
         _trace(req.query);
         var bridge = BridgeConfigNode.bridges()[req.query.bridge_id];
         var clip = bridge.instance.clip();
@@ -80,7 +81,7 @@ module.exports = function (RED) {
     });
     
     RED.httpAdmin.get('/BridgeConfigNode/GetSortedOwnerOptions', async function (req, res, next) {
-        _info("/GetSortedOwnerOptions");
+        _info("/BridgeConfigNode/GetSortedOwnerOptions");
         _trace(req.query);
         var clip = BridgeConfigNode.bridges()[req.query.bridge_id].instance.clip();
         var options = clip.getSortedOwnerOptions(req.query.rtype);
@@ -88,7 +89,7 @@ module.exports = function (RED) {
     });
     
     RED.httpAdmin.get('/BridgeConfigNode/GetSortedDeviceOptions', async function (req, res, next) {
-        _info("/GetSortedDeviceOptions");
+        _info("/BridgeConfigNode/GetSortedDeviceOptions");
         _trace(req.query);
         var clip = BridgeConfigNode.bridges()[req.query.bridge_id].instance.clip();
         var options = clip.getSortedDeviceOptions();
@@ -96,7 +97,7 @@ module.exports = function (RED) {
     });
 
     RED.httpAdmin.get('/BridgeConfigNode/GetDeviceServices', async function (req, res, next) {
-        _info("/GetDeviceServices");
+        _info("/BridgeConfigNode/GetDeviceServices");
         _trace(req.query);
         var clip = BridgeConfigNode.bridges()[req.query.bridge_id].instance.clip();
         var result = clip.getDeviceServices(req.query.device_id);
@@ -104,10 +105,24 @@ module.exports = function (RED) {
     });
 
     RED.httpAdmin.get('/BridgeConfigNode/GetSortedServiceOptions', async function (req, res, next) {
-        _info("/GetSortedServiceOptions");
+        _info("/BridgeConfigNode/GetSortedServiceOptions");
         _trace(req.query);
         var clip = BridgeConfigNode.bridges()[req.query.bridge_id].instance.clip();
         var options = clip.getSortedServiceOptions(req.query.owner,req.query.rtype);
         res.end(JSON.stringify(Object(options)));
-    });    
+    });
+
+    RED.httpAdmin.get('/DeviceNode/ButtonClicked', async function (req, res, next) {
+        _info("/DeviceNode/ButtonClicked",req.query);
+        _trace(req.query);
+        var device = DeviceNode.devices()[req.query.device_id];
+        if (device) {
+            device.instance.onButtonClicked();
+            res.end(JSON.stringify(Object({ success: true })));
+        }
+        else {
+            res.end(JSON.stringify(Object({ success: false, error: "Device not found" })));
+        }
+    });
+
 }
