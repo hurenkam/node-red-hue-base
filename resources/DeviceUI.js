@@ -139,35 +139,37 @@ When this flag is enabled the node will send an event at startup with its initia
             console.log("DeviceUI.onEditPrepare().on('change') device");
             instance.selectText("device");
             instance.selectDevice();
+            instance.updateOutputs(config);
+        });
+
+        $('#node-input-bridge').change(function() {
+            console.log("DeviceUI.onEditPrepare().on('change') bridge");
+            instance.updateOutputs(config);
         });
 
         $('#node-input-split').change(function() {
             console.log("DeviceUI.onEditPrepare().on('change') split");
             instance.updateOutputs(config);
         });
-    }
 
-    onEditSave(config) {
-        console.log("DeviceUI.onEditSave(",config,")");
-        this.updateOutputs(config);
-        super.onEditSave(config);
+        instance.updateOutputs(config);
     }
 
     updateOutputs(config) {
         console.log("DeviceUI.updateOutputs(",config,")");
 
+        config.bridge = $('#node-input-bridge').val();
+        config.device = $('#node-input-device').val();
+        config.split = $('#node-input-split').is(':checked');
+
         if (config.split) {
             console.log("DeviceUI.updateOutputs(): split outputs!");
-            var bridge_id = $('#node-input-bridge').val();
-            var device_id = $('#node-input-device').val();
-            var bridge = (bridge_id)? RED.nodes.node(bridge_id): null;
 
-            if ((!bridge_id) || (!bridge)) {
-                console.log("DeviceUI.updateOutputs(): invalid bridge:", bridge_id);
+            if (!config.bridge || !config.device) {
                 return;
             }
 
-            $.get('BridgeConfigNode/GetDeviceServices', { bridge_id: bridge.id, device_id: device_id } )
+            $.get('BridgeConfigNode/GetDeviceServices', { bridge_id: config.bridge, device_id: config.device } )
             .done( function(data) {
                 console.log("DeviceUI.updateOutputs(): services:", data);
                 var services = JSON.parse(data);
@@ -184,7 +186,7 @@ When this flag is enabled the node will send an event at startup with its initia
                 console.log("DeviceUI.updateOutputs(): failed to retrieve services");
             });
         } else {
-            config.outputLabels=[""]
+            config.outputLabels=[""];
             config.outputs=1;
         }
     }

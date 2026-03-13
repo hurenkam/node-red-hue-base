@@ -87,7 +87,6 @@ class DeviceNode extends BaseNode {
     }
 
     send_msg(output,msg) {
-        this.#trace("send_msg()",output,msg);
         if (this.config.outputs>1) {
             var msgs = [];
             for (let i=0; i<output;i++) {
